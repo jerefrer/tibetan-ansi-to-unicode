@@ -1,0 +1,54 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>README.md</title>
+</head>
+<body>
+<h1 id="tibetan-unicode-converter">tibetan-unicode-converter</h1>
+<p>A naive attempt at processing gibberish into Unicode Tibetan.</p>
+<p>Almost all Tibetan characters should be properly transcoded but only a few
+Sanskrit characters are currently handled.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>Just copy the repository locally.</p>
+<h2 id="usage">Usage</h2>
+<h3 id="as-a-library">As a library</h3>
+<pre><code class="language-js">new TibetanUnicodeConverter(&#39;oe×ñÎ &gt;ë-{,-8ß:-bÜ-¹¥/-e$-020&lt;Î&#39;).convert()
+=&gt; &#39;ཧཱུྃ༔ ཨོ་རྒྱན་ཡུལ་གྱི་ནུབ་བྱང་མཚམས༔&#39;</code></pre>
+<h3 id="as-a-tool">As a tool</h3>
+<h4 id="indexhtml"><code>index.html</code></h4>
+<p><img src="./docs/index-small.jpg" alt="Demo"></p>
+<ul>
+<li>Open <code>index.html</code></li>
+<li>Fill in the left box with your gibberish</li>
+<li>Click the <em>Copy to clipboard</em> button to copy the converted Unicode Tibetan.</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<p><img src="./docs/tests-small.jpg" alt="Demo"></p>
+<ul>
+<li>Open <code>tests.html</code></li>
+<li>Categories can be clicked to reveal their test cases.</li>
+<li>To ease debugging, clicking a tibetan case on the right side will re-run the
+test for just that particular case.</li>
+</ul>
+<h2 id="license">License</h2>
+<p>This software is licensed under the MIT License.</p>
+<p>Copyright Padmakara, 2021.</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+&quot;Software&quot;), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the
+following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
+</body>
+</html>`
