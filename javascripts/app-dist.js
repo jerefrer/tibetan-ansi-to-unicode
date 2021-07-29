@@ -10,19 +10,19 @@ $(function () {
     computed: {
       convertedLines: function convertedLines() {
         return this.lines.map(function (line) {
-          return new Converter(line).convert();
+          return new TibetanUnicodeConverter(line).convert();
         }).join("\n");
       }
     },
     mounted: function mounted() {
       new Clipboard('#copy-to-clipboard');
     },
-    template: "\n      <div class=\"ui form\">\n        <textarea id=\"transliteration\" readonly=\"\">{{convertedLines}}</textarea>\n      </div>\n    "
+    template: "\n      <div class=\"ui form\">\n        <textarea\n          id=\"transliteration\"\n          class=\"tibetan\"\n          readonly=\"\"\n        >{{convertedLines}}</textarea>\n      </div>\n    "
   });
   app = new Vue({
     el: '#main',
     data: {
-      text: "\n        *\xDC#-:\xE8-&\xE8,-\xFD\xEB9-U\xA8-+$-5\xDC$-\"0<-J\xEB#<\xCA \xCA\n        +0-2\xDD#-&\xE8,-\xFD\xEB9-$-v$-02,-0-+# \xCA\n        a/-/E:-&\xE8,-\xFD\xEB9-9\xE8-+\xEB#<-0\xB8\xA5+-\xFD-i\xEB:\xCA \xCA\n        J\xEB#<-\xFD-&\xE8,-\xFD\xEB9-&\xEB<-U\xA8-0$\xEB,-b\xB29-;\xEB# \xCA\n        /{\xE6+-\xFD-#<\xDF0-b\xDC-e\xDC,-x/<-X\xDC$-:-\xBA\xA5#<\xCA \xCA\n        \u20AC\xE7-7n\xE1:-\u0161-/7\xDC-:0-#<$-<\xE80<-:-J\xEB#<\xCA \xCA\n        n\xDC,-:<-F0-/5\xDC-T\xA9,-b\xDC<-i\xE1/-\xFD-8\xDC<\xCA \xCA\n        0\xDF-0*7-0\xE8+-\xFD7\xDC-7i\xEB-/-\u2026\xEB:-/9-;\xEB# \xCA\n      ".replace(/ /g, '').trim()
+      text: "\n        oe\xD7\xF1\xCE\n        >\xEB-{,-8\xDF:-b\xDC-\xB9\xA5/-e$-020<\xCE\n        \xFDV-#\xE8-<9-Z\xEB$-\xFD\xEB-:\xCE\n        8-02,-0&\xEB#-#\xDC-+$\xEB<-i\xE1/-/C\xE8<\xCE\n        \xFDV-7e\xB3$-#,<-5\xE8<-<\xDF-i#<\xCE\n        7\"\xEB9-\xB8\xA5-0\"7-7i\xEB-0$-\xFD\xEB<-/U\xEB9\xCE\n        a\xE8+-`\xDC-B\xE8<-<\xDF-/+#-/\u2026\xE5/-`\xDC<\xCE\n        e\xDC,-b\xDC<-/x/-d\xDC9-#;\xE8#<-<\xDF-#<\xEB:\xCE\n        \u03BC\xA5-9\xDF-\xFDV-<\xDCK\xDC-oe\xD7\xF1\xCE\n      ".replace(/ /g, '').trim()
     },
     computed: {
       lines: function lines() {
