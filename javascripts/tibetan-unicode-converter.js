@@ -33,12 +33,12 @@ var charsMap = [
   { tibetan: '༄༅', encoded: 'É'},
   { tibetan: '༄', encoded: 'Ò'},
   { tibetan: '༅',  encoded: 'È'},
-  { tibetan: 'ཛྲ', encoded: '‰'},
+  { tibetan: 'ཛྲ', encoded: '‰'}, // Maybe སྨྲ is more frequent
   { tibetan: 'སྭ', encoded: '—'},
   { tibetan: 'གྲྭ', encoded: '™'},
   { tibetan: 'ཏྭ', encoded: ''},
   { tibetan: 'ཌ', encoded: '¬'},
-  { tibetan: 'ངྒ', encoded: ']'},
+  { tibetan: 'སྦ', encoded: ']'}, // Maybe also ངྒ, but can it be really?
   { tibetan: 'བྷ', encoded: '£'},
   { tibetan: 'ཥ', encoded: '®'},
   { tibetan: 'ཛྱ', encoded: 'ˆ'},
@@ -62,7 +62,7 @@ var charsMap = [
   { tibetan: 'ཤྭ', encoded: '–'},
 
   { tibetan: 'ི', encoded: 'ÜÝÞ'},
-  { tibetan: 'ུ', encoded: 'ß¥©°àáâäã³±çå¨²æ§'},
+  { tibetan: 'ུ', encoded: 'ß¥©°àáâäã³±çå¨²æ§¦'},
   { tibetan: 'ེ', encoded: 'èé'},
   { tibetan: 'ོ', encoded: 'ëì'},
   { tibetan: 'ཱུ', encoded: 'Ø'},
@@ -70,6 +70,7 @@ var charsMap = [
   { tibetan: 'ྃ', encoded: 'ñ'},
   { tibetan: 'ཱ', encoded: '¡¢Ó'},
   { tibetan: 'ཻ', encoded: 'ê'},
+  { tibetan: 'ཱུ', encoded: 'Ù'},
 
   { tibetan: 'ཀ', encoded: '!´'},
   { tibetan: 'ཁ', encoded: '"'},
@@ -134,7 +135,7 @@ var charsMap = [
   { tibetan: 'རྐྱ', encoded: 'z' },
   { tibetan: 'རྔ', encoded: 'A' },
   { tibetan: 'རྗ', encoded: 'B' },
-  { tibetan: 'ཪྙ', encoded: 'C' },
+  { tibetan: 'རྙ', encoded: 'C' },
   { tibetan: 'རྟ', encoded: 'D' },
   { tibetan: 'རྡ', encoded: 'E' },
   { tibetan: 'རྣ', encoded: 'F' },
@@ -163,14 +164,15 @@ var charsMap = [
   { tibetan: 'སྣ', encoded: '['},
   { tibetan: 'ཀྱ', encoded: '`'},
   { tibetan: 'རྒྱ', encoded: '{'},
-  { tibetan: 'སྤྱ', encoded: ''},
+  { tibetan: 'སྤྱ', encoded: '₫'},
   { tibetan: 'སྐྱ', encoded: 'þ'},
   { tibetan: 'སྒྱ', encoded: '€'},
   { tibetan: 'སྤྲ', encoded: '‡'},
   { tibetan: 'སྦྱ', encoded: '‚'},
-  { tibetan: 'སྤྱ', encoded: '₫'},
   { tibetan: 'སྨ', encoded: '^'},
   { tibetan: 'སྩ', encoded: '_'},
+  { tibetan: 'ཏྭ', encoded: '₮'},
+  { tibetan: 'དྭ', encoded: '₯'},
   { tibetan: 'དྲྭ', encoded: 'š'}
 ]
 

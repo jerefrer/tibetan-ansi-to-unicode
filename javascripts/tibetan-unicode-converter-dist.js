@@ -63,7 +63,8 @@ var charsMap = [{
 }, {
   tibetan: 'ཛྲ',
   encoded: '‰'
-}, {
+}, // Maybe སྨྲ is more frequent
+{
   tibetan: 'སྭ',
   encoded: '—'
 }, {
@@ -76,9 +77,10 @@ var charsMap = [{
   tibetan: 'ཌ',
   encoded: '¬'
 }, {
-  tibetan: 'ངྒ',
+  tibetan: 'སྦ',
   encoded: ']'
-}, {
+}, // Maybe also ངྒ, but can it be really?
+{
   tibetan: 'བྷ',
   encoded: '£'
 }, {
@@ -146,7 +148,7 @@ var charsMap = [{
   encoded: 'ÜÝÞ'
 }, {
   tibetan: 'ུ',
-  encoded: 'ß¥©°àáâäã³±çå¨²æ§'
+  encoded: 'ß¥©°àáâäã³±çå¨²æ§¦'
 }, {
   tibetan: 'ེ',
   encoded: 'èé'
@@ -168,6 +170,9 @@ var charsMap = [{
 }, {
   tibetan: 'ཻ',
   encoded: 'ê'
+}, {
+  tibetan: 'ཱུ',
+  encoded: 'Ù'
 }, {
   tibetan: 'ཀ',
   encoded: '!´'
@@ -346,7 +351,7 @@ var charsMap = [{
   tibetan: 'རྗ',
   encoded: 'B'
 }, {
-  tibetan: 'ཪྙ',
+  tibetan: 'རྙ',
   encoded: 'C'
 }, {
   tibetan: 'རྟ',
@@ -434,7 +439,7 @@ var charsMap = [{
   encoded: '{'
 }, {
   tibetan: 'སྤྱ',
-  encoded: ''
+  encoded: '₫'
 }, {
   tibetan: 'སྐྱ',
   encoded: 'þ'
@@ -448,14 +453,17 @@ var charsMap = [{
   tibetan: 'སྦྱ',
   encoded: '‚'
 }, {
-  tibetan: 'སྤྱ',
-  encoded: '₫'
-}, {
   tibetan: 'སྨ',
   encoded: '^'
 }, {
   tibetan: 'སྩ',
   encoded: '_'
+}, {
+  tibetan: 'ཏྭ',
+  encoded: '₮'
+}, {
+  tibetan: 'དྭ',
+  encoded: '₯'
 }, {
   tibetan: 'དྲྭ',
   encoded: 'š'
