@@ -102,7 +102,7 @@ $(function() {
           v-for="(part, partIndex) in parts"
           v-on:click="(part.added || part.removed) && emitClickPart(part, partIndex)"
           v-bind:style="[part.added ? {color: '#2185d0', 'font-weight': 'bold'} : '', part.removed ? {color: '#db2828', 'font-weight': 'bold'} : '']"
-          >{{part.added || part.removed ? part.value.replace(/ /, '_') : part.value}}</span>
+          >{{part.added || part.removed ? part.value.replace(/ /g, '_') : part.value}}</span>
       </div>
     `
   })

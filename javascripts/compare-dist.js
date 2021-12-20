@@ -74,7 +74,7 @@ $(function () {
         });
       }
     },
-    template: "\n      <div>\n        <span\n          v-for=\"(part, partIndex) in parts\"\n          v-on:click=\"(part.added || part.removed) && emitClickPart(part, partIndex)\"\n          v-bind:style=\"[part.added ? {color: '#2185d0', 'font-weight': 'bold'} : '', part.removed ? {color: '#db2828', 'font-weight': 'bold'} : '']\"\n          >{{part.added || part.removed ? part.value.replace(/ /, '_') : part.value}}</span>\n      </div>\n    "
+    template: "\n      <div>\n        <span\n          v-for=\"(part, partIndex) in parts\"\n          v-on:click=\"(part.added || part.removed) && emitClickPart(part, partIndex)\"\n          v-bind:style=\"[part.added ? {color: '#2185d0', 'font-weight': 'bold'} : '', part.removed ? {color: '#db2828', 'font-weight': 'bold'} : '']\"\n          >{{part.added || part.removed ? part.value.replace(/ /g, '_') : part.value}}</span>\n      </div>\n    "
   });
   app = new Vue({
     el: '#main',
