@@ -103,7 +103,16 @@ var charsMap = [
   { tibetan: 'ཧ', encoded: '='},
   { tibetan: 'ཨ', encoded: '>'},
 
-
+  { tibetan: '༠', encoded: '¾'}, // Also taken by རྒྷ, careful !
+  { tibetan: '༡', encoded: '¿'},
+  { tibetan: '༢', encoded: 'À'},
+  { tibetan: '༣', encoded: 'Á'},
+  { tibetan: '༤', encoded: 'Â'},
+  { tibetan: '༥', encoded: 'Ã'},
+  { tibetan: '༦', encoded: 'Ä'},
+  { tibetan: '༧', encoded: 'Å'},
+  { tibetan: '༨', encoded: 'Æ'},
+  { tibetan: '༩', encoded: 'Ç'},
 
   { tibetan: 'ཊ', encoded: 'ª'},
 
@@ -169,11 +178,14 @@ var charsMap = [
   { tibetan: 'སྒྱ', encoded: '€'},
   { tibetan: 'སྤྲ', encoded: '‡'},
   { tibetan: 'སྦྱ', encoded: '‚'},
+  { tibetan: 'སྤྱ', encoded: ''},
   { tibetan: 'སྨ', encoded: '^'},
   { tibetan: 'སྩ', encoded: '_'},
   { tibetan: 'ཏྭ', encoded: '₮'},
   { tibetan: 'དྭ', encoded: '₯'},
-  { tibetan: 'དྲྭ', encoded: 'š'}
+  { tibetan: 'དྲྭ', encoded: 'š'},
+  { tibetan: '༼', encoded: 'Ð'},
+  { tibetan: '༽', encoded: 'Ñ'}
 ]
 
 var wordsMap = [
@@ -199,4 +211,5 @@ var wordsMap = [
   { tibetan: 'ཤཱུ་ནྱ', encoded: '»Õ-‚'},
   { tibetan: 'ཏཱ', encoded: '·Ô'},
   { tibetan: 'ཨོཾཿ', encoded: '>ùï'},
+  { tibetan: 'མངྒ་ལཾ', encoded: '0]-:î'},
 ]
