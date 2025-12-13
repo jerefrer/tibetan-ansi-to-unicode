@@ -215,7 +215,7 @@ h1 {
 .tibetan {
   font-family: TibetanChogyalUnicode-170221, TibetanChogyalUnicode-ID,
     TibetanChogyalUnicode, TibetanMachineUnicode, sans-serif;
-  font-size: 20px;
+  font-size: 32px;
 }
 
 .diff {
