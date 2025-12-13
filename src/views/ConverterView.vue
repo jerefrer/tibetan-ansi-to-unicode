@@ -412,8 +412,8 @@ textarea {
   border-radius: 0 0 12px 12px;
   resize: none;
   font-family: inherit;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 21px;
+  line-height: 39px;
   box-sizing: border-box;
   transition: all 0.2s ease;
 }
@@ -450,6 +450,6 @@ textarea.tibetan {
   font-family: TibetanChogyalUnicode-170221, TibetanChogyalUnicode-ID,
     TibetanChogyalUnicode, TibetanMachineUnicode, sans-serif;
   font-size: 36px;
-  line-height: 1.1em;
+  line-height: 39px;
 }
 </style>
