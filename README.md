@@ -1,50 +1,65 @@
-# tibetan-ansi-to-unicode
+# tibetan-unicode-converter
 
-A naive attempt at converting ANSI Tibetan from TibetanChogyal to Unicode.
+A library for converting ANSI Tibetan from TibetanChogyal to Unicode and back.
 
 Almost all Tibetan characters should be properly transcoded but only a few
 Sanskrit characters are currently handled.
 
-## Getting started
+## Installation
 
-Just copy the repository locally.
+```bash
+npm install tibetan-unicode-converter
+```
 
 ## Usage
 
-### As a library
+### ANSI to Unicode
 
 ```js
-new TibetanUnicodeConverter('oe×ñÎ >ë-{,-8ß:-bÜ-¹¥/-e$-020<Î').convert()
-=> 'ཧཱུྃ༔ ཨོ་རྒྱན་ཡུལ་གྱི་ནུབ་བྱང་མཚམས༔'
+import TibetanUnicodeConverter from "tibetan-unicode-converter";
+
+const converter = new TibetanUnicodeConverter(
+  "oe×ñÎ >ë-{,-8ß:-bÜ-¹¥/-e$-020<Î"
+);
+converter.convert();
+// => 'ཧཱུྃ༔ ཨོ་རྒྱན་ཡུལ་གྱི་ནུབ་བྱང་མཚམས༔'
 ```
 
-### As a tool
+### Unicode to ANSI
 
-#### `index.html`
+```js
+import TibetanUnicodeConverter from "tibetan-unicode-converter";
 
-![Demo](./docs/index-small.jpg)
+const converter = new TibetanUnicodeConverter("ཧཱུྃ༔");
+converter.convertToAnsi();
+// => 'oe×ñÎ'
+```
 
-- Open `index.html`
-- Fill in the left box with your gibberish
-- Click the _Copy to clipboard_ button to copy the converted Unicode Tibetan.
+### Test Data
+
+The package also exports test data that can be used for validation:
+
+```js
+import { testGroups } from "tibetan-unicode-converter";
+
+// testGroups is an array of test groups, each containing:
+// - name: string
+// - tests: array of { tibetan: string, conversion: string }
+// - includeInPercentage?: boolean
+// - sentences?: boolean
+```
 
 ## Testing
 
-![Demo](./docs/tests-small.jpg)
-
-- Open `tests.html`
-- Categories can be clicked to reveal their test cases.
-- To ease debugging, clicking a tibetan case on the right side will re-run the
-  test for just that particular case.
+```bash
+npm test
+```
 
 ## Credits
 
 A zillion thanks to:
 
 - Tony Duff and friends for producing all these beautiful Tibetan fonts.
-- Everybody involved in building an maintaining Vue.js, jQuery, SemanticUI,
-  Sugar.js, Underscore.js, DevDocs, Zeal and Google Chrome for making web
-  development so easy and enjoyable.
 
 Through the virtue coming from this work, may all beings human and
 otherwise reach absolute freedom.

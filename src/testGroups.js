@@ -169,7 +169,7 @@ export const testGroups = [
     includeInPercentage: true,
     sentences: true,
     tests: [
-      { tibetan: "ཧཱུྃ༔", conversion: "oe×ñÎ" },
+      { tibetan: "ཧཱུྃ༔", conversion: "oe×ñÎ" },
       {
         tibetan: "ཨོ་རྒྱན་ཡུལ་གྱི་ནུབ་བྱང་མཚམས༔",
         conversion: `>ë-{,-8ß:-bÜ-¹¥/-e$-020<Î`,
@@ -195,7 +195,7 @@ export const testGroups = [
         tibetan: "བྱིན་གྱིས་བརླབ་ཕྱིར་གཤེགས་སུ་གསོལ༔",
         conversion: `eÜ,-bÜ<-/x/-dÜ9-#;è#<-<ß-#<ë:Î`,
       },
-      { tibetan: "གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྃ༔", conversion: `μ¥-9ß-ýV-<ÜKÜ-oe×ñÎ` },
+      { tibetan: "གུ་རུ་པདྨ་སིདྡྷི་ཧཱུྃ༔", conversion: `μ¥-9ß-ýV-<ÜKÜ-oe×ñÎ` },
     ],
   },
   {
@@ -245,7 +245,7 @@ export const testGroups = [
       },
       {
         tibetan: "བླ་མ་ལོངས་སྤྱོད་རྫོགས་སྐུ་ལ་གསོལ་བ་འདེབས༔",
-        conversion: `v-0-:ë$<-ë+-Jë#<-Uß-:-#<ë:-/-7+è/<Î`,
+        conversion: `v-0-:ë$<-₫ë+-Jë#<-Uß-:-#<ë:-/-7+è/<Î`,
       },
       {
         tibetan: "མི་འབྱེད་འཇིག་རྟེན་དག་པའི་ཞིང་ཁམས་སུ༔",
@@ -281,7 +281,7 @@ export const testGroups = [
     ],
   },
   {
-    name: "Trashi Gyepa",
+    name: "Tashi Gyepa",
     includeInPercentage: true,
     sentences: true,
     tests: [
