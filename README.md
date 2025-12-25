@@ -1,4 +1,4 @@
-# tibetan-unicode-converter
+# tibetan-ansi-to-unicode
 
 A library for converting ANSI Tibetan from TibetanChogyal to Unicode and back.
 
@@ -8,7 +8,7 @@ Sanskrit characters are currently handled.
 ## Installation
 
 ```bash
-npm install tibetan-unicode-converter
+npm install tibetan-ansi-to-unicode
 ```
 
 ## Usage
@@ -16,11 +16,9 @@ npm install tibetan-unicode-converter
 ### ANSI to Unicode
 
 ```js
-import TibetanUnicodeConverter from "tibetan-unicode-converter";
+import TibetanAnsiToUnicode from "tibetan-ansi-to-unicode";
 
-const converter = new TibetanUnicodeConverter(
-  "oe×ñÎ >ë-{,-8ß:-bÜ-¹¥/-e$-020<Î"
-);
+const converter = new TibetanAnsiToUnicode("oe×ñÎ >ë-{,-8ß:-bÜ-¹¥/-e$-020<Î");
 converter.convert();
 // => 'ཧཱུྃ༔ ཨོ་རྒྱན་ཡུལ་གྱི་ནུབ་བྱང་མཚམས༔'
 ```
@@ -28,9 +26,9 @@ converter.convert();
 ### Unicode to ANSI
 
 ```js
-import TibetanUnicodeConverter from "tibetan-unicode-converter";
+import TibetanAnsiToUnicode from "tibetan-unicode-converter";
 
-const converter = new TibetanUnicodeConverter("ཧཱུྃ༔");
+const converter = new TibetanAnsiToUnicode("ཧཱུྃ༔");
 converter.convertToAnsi();
 // => 'oe×ñÎ'
 ```
@@ -68,7 +66,7 @@ otherwise reach absolute freedom.
 
 This software is licensed under the MIT License.
 
-Copyright Padmakara, 2021.
+Copyright Padmakara, 2025.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
