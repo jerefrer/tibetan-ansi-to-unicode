@@ -5,6 +5,10 @@ A library for converting ANSI Tibetan from TibetanChogyal to Unicode and back.
 Almost all Tibetan characters should be properly transcoded but only a few
 Sanskrit characters are currently handled.
 
+This library is directly usable as a web app here : https://tibetan-ansi-to-unicode.vercel.app/
+
+The repo of the web app is here : https://github.com/jerefrer/tibetan-ansi-to-unicode-app
+
 ## Installation
 
 ```bash
