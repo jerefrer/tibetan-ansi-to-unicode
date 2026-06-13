@@ -4,7 +4,15 @@
 // hence big/small), bold (\b), paragraphs, colours, etc. — are passed through
 // untouched, and runs in non-legacy fonts are left as-is.
 
-import { getBudaTable } from "../fonts.js";
+import { getBudaTable, defaultSizeScale } from "../fonts.js";
+
+// Control words that stand for a literal character (Word writes smart quotes /
+// dashes this way). In legacy fonts these code points are Tibetan glyphs, so
+// they must go through conversion, not be passed through as punctuation.
+const RTF_SYM = {
+  ldblquote: "“", rdblquote: "”", lquote: "‘", rquote: "’",
+  emdash: "—", endash: "–", bullet: "•",
+};
 
 const IGNORE_DEST = new Set([
   "colortbl", "stylesheet", "info", "pict", "object", "themedata",
@@ -39,16 +47,10 @@ function parseFontTableRegion(rtf) {
   return { gs, ge, group, fonts, maxF };
 }
 
-function emitUnicode(out, text) {
-  out.s += "\\uc1 ";
-  for (const ch of text) {
-    out.s += "\\u" + ch.codePointAt(0) + "?";
-  }
-}
-
 export function convertRtfDocument(rtf, options = {}) {
   rtf = String(rtf);
   const unicodeFont = options.unicodeFont || "Jomolhari";
+  const sizeScale = options.sizeScale ?? defaultSizeScale(unicodeFont);
   const ft = parseFontTableRegion(rtf);
   if (!ft) return rtf; // not an RTF we understand
 
@@ -65,16 +67,21 @@ export function convertRtfDocument(rtf, options = {}) {
   const body = rtf.slice(ft.ge + 1);
 
   const out = { s: prefix };
-  const stack = [{ font: null, ignore: false }];
+  const stack = [{ font: null, ignore: false, size: null }];
   const cur = () => stack[stack.length - 1];
   const curLegacy = () => cur().font != null && legacy.has(cur().font) && !cur().ignore;
   let buf = "";
   let bufTable = null;
   function flush() {
-    if (buf) {
-      emitUnicode(out, convert(buf, bufTable));
-      buf = "";
-    }
+    if (!buf) return;
+    const conv = convert(buf, bufTable);
+    const sz = cur().size;
+    const scaled = sizeScale !== 1 && sz;
+    out.s += "\\uc1 ";
+    if (scaled) out.s += "\\fs" + Math.max(1, Math.round(sz * sizeScale)) + " ";
+    for (const ch of conv) out.s += "\\u" + ch.codePointAt(0) + "?";
+    if (scaled) out.s += "\\fs" + sz + " ";
+    buf = "";
   }
   function convert(text, table) {
     let r = "";
@@ -91,7 +98,7 @@ export function convertRtfDocument(rtf, options = {}) {
     const c = body[i];
     if (c === "{") {
       flush();
-      stack.push({ font: cur().font, ignore: cur().ignore });
+      stack.push({ font: cur().font, ignore: cur().ignore, size: cur().size });
       out.s += "{";
       i++;
     } else if (c === "}") {
@@ -128,6 +135,15 @@ export function convertRtfDocument(rtf, options = {}) {
           cur().font = fid;
           if (legacy.has(fid) && !cur().ignore) out.s += "\\f" + newF + (trailing || " ");
           else out.s += tok + trailing;
+        } else if (word === "fs" && num !== "") {
+          if (curLegacy()) flush();
+          cur().size = parseInt(num, 10);
+          out.s += tok + trailing;
+        } else if (RTF_SYM[word] !== undefined) {
+          if (curLegacy()) {
+            buf += RTF_SYM[word];
+            bufTable = getBudaTable(ft.fonts[cur().font]);
+          } else out.s += tok + trailing;
         } else if (IGNORE_DEST.has(word.toLowerCase())) {
           cur().ignore = true;
           flush();

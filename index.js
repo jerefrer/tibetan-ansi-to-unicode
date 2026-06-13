@@ -15,6 +15,7 @@ export {
   getBudaTable,
   isKnownFont,
   supportedFonts,
+  defaultSizeScale,
 } from "./src/fonts.js";
 
 // Document parsers -> font-tagged runs and direct conversion helpers.

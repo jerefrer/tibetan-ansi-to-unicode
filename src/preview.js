@@ -97,6 +97,11 @@ const IGNORE_DEST = new Set([
   "listoverridetable", "rsidtbl", "generator", "filetbl",
 ]);
 
+const RTF_SYM = {
+  ldblquote: "“", rdblquote: "”", lquote: "‘", rquote: "’",
+  emdash: "—", endash: "–", bullet: "•",
+};
+
 function rtfFonts(rtf) {
   const at = rtf.indexOf("\\fonttbl");
   if (at < 0) return {};
@@ -200,6 +205,7 @@ export function rtfToBlocks(rtf) {
         else if (word === "qj") para.align = "justify";
         else if (word === "ql") para.align = "left";
         else if (IGNORE_DEST.has(word.toLowerCase())) c0.ignore = true;
+        else if (RTF_SYM[word] !== undefined) add(RTF_SYM[word]);
         else if (word === "u" && num !== "") { add(String.fromCodePoint(parseInt(num, 10) & 0xffff)); }
         i = j;
       } else { i += 2; }

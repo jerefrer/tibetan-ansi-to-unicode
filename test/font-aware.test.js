@@ -114,17 +114,35 @@ describe("convertDocxDocument (in-place, preserves formatting)", () => {
     const zip = new JSZip();
     zip.file("word/document.xml", doc);
     const buf = await zip.generateAsync({ type: "nodebuffer" });
-    const out = await convertDocxDocument(buf, { unicodeFont: "Jomolhari" });
+    // sizeScale:1 keeps sizes, so we can check pure preservation
+    const out = await convertDocxDocument(buf, { unicodeFont: "Jomolhari", sizeScale: 1 });
     const xmlOut = await (await JSZip.loadAsync(out))
       .file("word/document.xml")
       .async("string");
     assert.ok(xmlOut.includes("ཀཁག")); // converted big run
     assert.ok(xmlOut.includes("དྨ")); // converted Sanskrit run
-    assert.ok(xmlOut.includes('w:val="68"')); // size preserved
+    assert.ok(xmlOut.includes('w:val="68"')); // size preserved (scale 1)
     assert.ok(xmlOut.includes("<w:b/>")); // bold preserved
     assert.ok(xmlOut.includes('w:cs="Jomolhari"')); // unicode font set
     assert.ok(xmlOut.includes(">Hello<")); // non-Tibetan run untouched
     assert.ok(xmlOut.includes('w:ascii="Arial"'));
+  });
+
+  it("scales legacy run sizes down for the Unicode font (default)", async () => {
+    const doc =
+      '<w:document xmlns:w="x"><w:body><w:p>' +
+      '<w:r><w:rPr><w:rFonts w:cs="TibetanChogyal"/><w:sz w:val="68"/><w:szCs w:val="68"/></w:rPr><w:t>!</w:t></w:r>' +
+      '<w:r><w:rPr><w:rFonts w:ascii="Arial"/><w:sz w:val="24"/></w:rPr><w:t>Hi</w:t></w:r>' +
+      "</w:p></w:body></w:document>";
+    const zip = new JSZip();
+    zip.file("word/document.xml", doc);
+    const out = await convertDocxDocument(await zip.generateAsync({ type: "nodebuffer" }), {
+      unicodeFont: "Jomolhari",
+    });
+    const xmlOut = await (await JSZip.loadAsync(out)).file("word/document.xml").async("string");
+    assert.ok(xmlOut.includes('w:val="49"')); // 68 * 0.72 -> 49 on the Tibetan run
+    assert.ok(!xmlOut.includes('w:val="68"'));
+    assert.ok(xmlOut.includes('w:val="24"')); // Arial run size untouched
   });
 });
 

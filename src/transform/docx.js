@@ -6,7 +6,7 @@
 // Only runs whose font is a known legacy font (BUDA table) are touched; any other
 // run is left byte-for-byte untouched.
 
-import { getBudaTable } from "../fonts.js";
+import { getBudaTable, defaultSizeScale } from "../fonts.js";
 
 const TARGET_XML = /^word\/(document|header\d+|footer\d+|footnotes|endnotes)\.xml$/;
 
@@ -55,11 +55,20 @@ function resolveFont(runXml, rFontsTag, fallbackFont) {
   return fallbackFont;
 }
 
-function processRun(runXml, unicodeFont, fallbackFont) {
+function scaleSizes(runXml, scale) {
+  if (!scale || scale === 1) return runXml;
+  return runXml.replace(/<w:(sz|szCs) w:val="(\d+)"\/>/g, (m, tag, val) => {
+    const v = Math.max(1, Math.round(parseInt(val, 10) * scale));
+    return `<w:${tag} w:val="${v}"/>`;
+  });
+}
+
+function processRun(runXml, unicodeFont, fallbackFont, sizeScale) {
   const rFontsMatch = runXml.match(/<w:rFonts\b[^>]*\/?>/);
   const font = resolveFont(runXml, rFontsMatch && rFontsMatch[0], fallbackFont);
   const table = font && getBudaTable(font);
   if (!table) return runXml; // not a legacy Tibetan run — leave untouched
+  runXml = scaleSizes(runXml, sizeScale); // shrink to match the legacy visual size
 
   // 1) convert the text in each <w:t>
   let out = runXml.replace(
@@ -91,9 +100,9 @@ function processRun(runXml, unicodeFont, fallbackFont) {
   return out;
 }
 
-function processXml(xml, unicodeFont, fallbackFont) {
+function processXml(xml, unicodeFont, fallbackFont, sizeScale) {
   return xml.replace(/<w:r\b[^>]*>[\s\S]*?<\/w:r>/g, (run) =>
-    processRun(run, unicodeFont, fallbackFont)
+    processRun(run, unicodeFont, fallbackFont, sizeScale)
   );
 }
 
@@ -112,6 +121,7 @@ function readDefaultFont(stylesXml) {
 // Returns a Uint8Array of the converted .docx.
 export async function convertDocxDocument(data, options = {}) {
   const unicodeFont = options.unicodeFont || "Jomolhari";
+  const sizeScale = options.sizeScale ?? defaultSizeScale(unicodeFont);
   const { default: JSZip } = await import("jszip");
   const zip = await JSZip.loadAsync(data);
 
@@ -125,7 +135,7 @@ export async function convertDocxDocument(data, options = {}) {
       .filter((name) => TARGET_XML.test(name))
       .map(async (name) => {
         const xml = await zip.file(name).async("string");
-        zip.file(name, processXml(xml, unicodeFont, fallbackFont));
+        zip.file(name, processXml(xml, unicodeFont, fallbackFont, sizeScale));
       })
   );
 

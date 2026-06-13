@@ -40,3 +40,17 @@ export function isKnownFont(fontName) {
 
 // Sorted list of supported font PostScript names.
 export const supportedFonts = Object.keys(budaTables).sort();
+
+// Unicode Tibetan fonts render at different visual sizes than the legacy fonts
+// for the same point size, so when re-fonting a document we scale the point
+// sizes to keep the original visual size. Anchored on Jomolhari ≈ 0.72 of the
+// legacy size; others derived from their KA/em ratio. Tweakable.
+const SIZE_SCALE = {
+  jomolhari: 0.72,
+  tibetanmachineuni: 1.17,
+  tibetanmachineunicode: 1.17,
+  ddcuchen: 0.59,
+};
+export function defaultSizeScale(fontName) {
+  return SIZE_SCALE[normalizeFontName(fontName)] ?? 1;
+}
