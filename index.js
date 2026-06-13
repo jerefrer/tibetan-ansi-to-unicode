@@ -24,3 +24,6 @@ export { docxToRuns, convertDocx, documentXmlToRuns } from "./src/parsers/docx.j
 // In-place document transforms preserving all formatting.
 export { convertDocxDocument } from "./src/transform/docx.js";
 export { convertRtfDocument } from "./src/transform/rtf.js";
+
+// Formatting-aware preview model (paragraphs + run sizes/bold), text converted.
+export { docxToBlocks, rtfToBlocks } from "./src/preview.js";
