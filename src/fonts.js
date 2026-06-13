@@ -45,12 +45,16 @@ export const supportedFonts = Object.keys(budaTables).sort();
 // for the same point size, so when re-fonting a document we scale the point
 // sizes to keep the original visual size. Anchored on Jomolhari ≈ 0.72 of the
 // legacy size; others derived from their KA/em ratio. Tweakable.
+// Unicode Tibetan fonts all render larger than the legacy fonts at the same
+// point size, so the converted text always gets a SMALLER point size. Values are
+// proportional to each font's glyph size (KA/em) for a consistent visual result;
+// users can override with an explicit scale. All < 1 (never larger than original).
 const SIZE_SCALE = {
-  jomolhari: 0.72,
-  tibetanmachineuni: 1.17,
-  tibetanmachineunicode: 1.17,
-  ddcuchen: 0.59,
+  jomolhari: 0.55,
+  tibetanmachineuni: 0.9,
+  tibetanmachineunicode: 0.9,
+  ddcuchen: 0.45,
 };
 export function defaultSizeScale(fontName) {
-  return SIZE_SCALE[normalizeFontName(fontName)] ?? 1;
+  return Math.min(1, SIZE_SCALE[normalizeFontName(fontName)] ?? 0.7);
 }

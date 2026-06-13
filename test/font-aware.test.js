@@ -148,9 +148,10 @@ describe("convertDocxDocument (in-place, preserves formatting)", () => {
     zip.file("word/document.xml", doc);
     const out = await convertDocxDocument(await zip.generateAsync({ type: "nodebuffer" }), {
       unicodeFont: "Jomolhari",
+      sizeScale: 0.5,
     });
     const xmlOut = await (await JSZip.loadAsync(out)).file("word/document.xml").async("string");
-    assert.ok(xmlOut.includes('w:val="49"')); // 68 * 0.72 -> 49 on the Tibetan run
+    assert.ok(xmlOut.includes('w:val="34"')); // 68 * 0.5 -> 34 on the Tibetan run
     assert.ok(!xmlOut.includes('w:val="68"'));
     assert.ok(xmlOut.includes('w:val="24"')); // Arial run size untouched
   });
