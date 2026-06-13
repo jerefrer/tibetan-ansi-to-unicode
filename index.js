@@ -20,3 +20,7 @@ export {
 // Document parsers -> font-tagged runs and direct conversion helpers.
 export { rtfToRuns, convertRtf } from "./src/parsers/rtf.js";
 export { docxToRuns, convertDocx, documentXmlToRuns } from "./src/parsers/docx.js";
+
+// In-place document transforms preserving all formatting.
+export { convertDocxDocument } from "./src/transform/docx.js";
+export { convertRtfDocument } from "./src/transform/rtf.js";

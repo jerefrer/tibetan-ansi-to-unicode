@@ -12,6 +12,8 @@ import TibetanUnicodeConverter, {
   convertRtf,
   documentXmlToRuns,
   convertDocx,
+  convertDocxDocument,
+  convertRtfDocument,
 } from "../index.js";
 
 describe("homoglyph / decoding fixes (default plain-text table)", () => {
@@ -98,5 +100,46 @@ describe("DOCX parsing", () => {
     zip.file("word/document.xml", xml);
     const buf = await zip.generateAsync({ type: "nodebuffer" });
     assert.strictEqual((await convertDocx(buf)).trim(), "ཀཁག");
+  });
+});
+
+describe("convertDocxDocument (in-place, preserves formatting)", () => {
+  it("converts legacy runs, keeps sizes/bold, leaves other runs", async () => {
+    const doc =
+      '<w:document xmlns:w="x"><w:body><w:p>' +
+      '<w:r><w:rPr><w:rFonts w:cs="TibetanChogyal"/><w:sz w:val="68"/><w:szCs w:val="68"/><w:b/></w:rPr><w:t>!"#</w:t></w:r>' +
+      '<w:r><w:rPr><w:rFonts w:cs="TibetanChogyalSkt2"/><w:szCs w:val="48"/></w:rPr><w:t>V</w:t></w:r>' +
+      '<w:r><w:rPr><w:rFonts w:ascii="Arial"/></w:rPr><w:t>Hello</w:t></w:r>' +
+      "</w:p></w:body></w:document>";
+    const zip = new JSZip();
+    zip.file("word/document.xml", doc);
+    const buf = await zip.generateAsync({ type: "nodebuffer" });
+    const out = await convertDocxDocument(buf, { unicodeFont: "Jomolhari" });
+    const xmlOut = await (await JSZip.loadAsync(out))
+      .file("word/document.xml")
+      .async("string");
+    assert.ok(xmlOut.includes("ཀཁག")); // converted big run
+    assert.ok(xmlOut.includes("དྨ")); // converted Sanskrit run
+    assert.ok(xmlOut.includes('w:val="68"')); // size preserved
+    assert.ok(xmlOut.includes("<w:b/>")); // bold preserved
+    assert.ok(xmlOut.includes('w:cs="Jomolhari"')); // unicode font set
+    assert.ok(xmlOut.includes(">Hello<")); // non-Tibetan run untouched
+    assert.ok(xmlOut.includes('w:ascii="Arial"'));
+  });
+});
+
+describe("convertRtfDocument (in-place, preserves formatting)", () => {
+  it("converts legacy runs to \\u, adds font, keeps sizes and other runs", () => {
+    const rtf =
+      "{\\rtf1\\ansi{\\fonttbl{\\f0\\fnil TibetanChogyal;}{\\f1\\fnil Times New Roman;}}" +
+      "\\f0\\fs48\\'21\\'22\\'23\\f1\\fs24 Hello\\par}";
+    const out = convertRtfDocument(rtf, { unicodeFont: "Jomolhari" });
+    const decoded = [...out.matchAll(/\\u(\d+)\?/g)]
+      .map((m) => String.fromCodePoint(+m[1]))
+      .join("");
+    assert.strictEqual(decoded, "ཀཁག");
+    assert.ok(/Jomolhari;/.test(out)); // font added to table
+    assert.ok(out.includes("\\fs48")); // size preserved
+    assert.ok(/\\f1\\fs24 Hello/.test(out)); // Times run untouched
   });
 });
