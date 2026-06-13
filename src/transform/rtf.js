@@ -66,6 +66,7 @@ export function convertRtfDocument(rtf, options = {}) {
   const curLegacy = () => cur().font != null && legacy.has(cur().font) && !cur().ignore;
   let buf = "";
   let bufTable = null;
+  let paraEmpty = true; // no visible content seen in the current paragraph yet
   function flush() {
     if (!buf) return;
     const conv = convert(buf, bufTable);
@@ -76,6 +77,7 @@ export function convertRtfDocument(rtf, options = {}) {
     for (const ch of conv) out.s += "\\u" + ch.codePointAt(0) + "?";
     if (scaled) out.s += "\\fs" + sz + " ";
     buf = "";
+    paraEmpty = false;
   }
   function convert(text, table) {
     let r = "";
@@ -107,7 +109,7 @@ export function convertRtfDocument(rtf, options = {}) {
         if (curLegacy()) {
           buf += String.fromCharCode(parseInt(hex, 16));
           bufTable = getBudaTable(ft.fonts[cur().font]);
-        } else out.s += body.substr(i, 4);
+        } else { out.s += body.substr(i, 4); paraEmpty = false; }
         i += 4;
       } else if (next === "\\" || next === "{" || next === "}") {
         if (curLegacy()) buf += next;
@@ -123,7 +125,18 @@ export function convertRtfDocument(rtf, options = {}) {
         const tok = body.slice(i, j);
         let trailing = "";
         if (body[j] === " ") { trailing = " "; j++; }
-        if (word === "f" && num !== "") {
+        if (word === "par" || word === "sect") {
+          flush();
+          const fontLegacy = cur().font != null && legacy.has(cur().font) && !cur().ignore;
+          if (paraEmpty && fontLegacy && cur().size && sizeScale) {
+            // empty line: shrink the paragraph mark to ~1/3 so blank lines are small
+            const small = Math.max(2, Math.round((cur().size * sizeScale) / 3));
+            out.s += "\\fs" + small + " " + tok + "\\fs" + cur().size + (trailing || " ");
+          } else {
+            out.s += tok + trailing;
+          }
+          paraEmpty = true;
+        } else if (word === "f" && num !== "") {
           flush();
           const fid = parseInt(num, 10);
           cur().font = fid;
@@ -137,7 +150,7 @@ export function convertRtfDocument(rtf, options = {}) {
           if (curLegacy()) {
             buf += symLegacyChar(word, mac); // original font byte -> converted
             bufTable = getBudaTable(ft.fonts[cur().font]);
-          } else out.s += tok + trailing; // keep the punctuation for non-legacy text
+          } else { out.s += tok + trailing; paraEmpty = false; } // keep punctuation for non-legacy
         } else if (IGNORE_DEST.has(word.toLowerCase())) {
           cur().ignore = true;
           flush();
@@ -158,7 +171,7 @@ export function convertRtfDocument(rtf, options = {}) {
       if (curLegacy()) {
         buf += c;
         bufTable = getBudaTable(ft.fonts[cur().font]);
-      } else out.s += c;
+      } else { out.s += c; if (c !== " " && c !== "\t") paraEmpty = false; }
       i++;
     }
   }

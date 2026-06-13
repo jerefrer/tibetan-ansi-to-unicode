@@ -108,6 +108,26 @@ function processXml(xml, unicodeFont, fallbackFont, sizeScale) {
   );
 }
 
+// Empty paragraphs keep their (large) paragraph-mark size, making blank lines as
+// tall as body text. Shrink the mark of empty paragraphs to ~1/3 of the scaled
+// body size so blank lines are small.
+function shrinkEmptyParagraphs(xml, sizeScale) {
+  if (!sizeScale) return xml;
+  const f = sizeScale / 3;
+  return xml.replace(/<w:p\b[^>]*>[\s\S]*?<\/w:p>/g, (p) => {
+    const tre = /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g;
+    let m;
+    while ((m = tre.exec(p))) if (m[1] && m[1].replace(/\s/g, "")) return p; // has text
+    const ppr = p.match(/<w:pPr>[\s\S]*?<\/w:pPr>/);
+    if (!ppr) return p;
+    const np = ppr[0].replace(
+      /<w:(sz|szCs) w:val="(\d+)"\/>/g,
+      (mm, t, v) => `<w:${t} w:val="${Math.max(2, Math.round(parseInt(v, 10) * f))}"/>`
+    );
+    return p.replace(ppr[0], np);
+  });
+}
+
 // Read the document's default font (docDefaults) so runs without an explicit
 // rFonts can still be converted when the default is a legacy font.
 function readDefaultFont(stylesXml) {
@@ -137,7 +157,9 @@ export async function convertDocxDocument(data, options = {}) {
       .filter((name) => TARGET_XML.test(name))
       .map(async (name) => {
         const xml = await zip.file(name).async("string");
-        zip.file(name, processXml(xml, unicodeFont, fallbackFont, sizeScale));
+        let processed = processXml(xml, unicodeFont, fallbackFont, sizeScale);
+        processed = shrinkEmptyParagraphs(processed, sizeScale);
+        zip.file(name, processed);
       })
   );
 
