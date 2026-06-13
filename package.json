@@ -1,6 +1,6 @@
 {
   "name": "tibetan-ansi-to-unicode",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Convert between ANSI encoded Tibetan text and Unicode, with font-aware conversion from Word (.docx) and RTF",
   "type": "module",
   "main": "index.js",
