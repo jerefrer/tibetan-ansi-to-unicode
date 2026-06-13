@@ -5,6 +5,7 @@
 // sizes, bold, paragraph flow) without a full Office renderer.
 
 import { getBudaTable } from "./fonts.js";
+import { isMacRtf, isSym, symLegacyChar, SYM_CHAR } from "./rtf-symbols.js";
 
 function convert(text, table) {
   if (!table) return text;
@@ -33,6 +34,16 @@ function attr(tag, name) {
 }
 const ALIGN = { both: "justify", center: "center", right: "right", left: "left", start: "left", end: "right" };
 
+// Prefer the rFonts slot that is a known legacy font (ascii/hAnsi before cs).
+function pickFont(rFontsTag, fallback) {
+  if (!rFontsTag) return fallback;
+  const a = attr(rFontsTag, "w:ascii");
+  const h = attr(rFontsTag, "w:hAnsi");
+  const c = attr(rFontsTag, "w:cs");
+  for (const f of [a, h, c]) if (f && getBudaTable(f)) return f;
+  return a || h || c || fallback;
+}
+
 function docDefaultFont(stylesXml) {
   if (!stylesXml) return null;
   const dd = stylesXml.match(/<w:docDefaults>[\s\S]*?<\/w:docDefaults>/);
@@ -50,9 +61,7 @@ function paragraphFromXml(inner, fallbackFont) {
   while ((rm = runRe.exec(inner))) {
     const r = rm[1];
     const rf = r.match(/<w:rFonts\b[^>]*\/?>/);
-    const font =
-      (rf && (attr(rf[0], "w:cs") || attr(rf[0], "w:ascii") || attr(rf[0], "w:hAnsi"))) ||
-      fallbackFont;
+    const font = pickFont(rf && rf[0], fallbackFont);
     let text = "";
     const tokRe = /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:tab\b[^>]*\/?>/g;
     let tk;
@@ -97,10 +106,6 @@ const IGNORE_DEST = new Set([
   "listoverridetable", "rsidtbl", "generator", "filetbl",
 ]);
 
-const RTF_SYM = {
-  ldblquote: "“", rdblquote: "”", lquote: "‘", rquote: "’",
-  emdash: "—", endash: "–", bullet: "•",
-};
 
 function rtfFonts(rtf) {
   const at = rtf.indexOf("\\fonttbl");
@@ -124,6 +129,7 @@ function rtfFonts(rtf) {
 
 export function rtfToBlocks(rtf) {
   rtf = String(rtf);
+  const mac = isMacRtf(rtf);
   const fonts = rtfFonts(rtf);
   const tableFor = (id) => (fonts[id] ? getBudaTable(fonts[id]) : null);
 
@@ -205,7 +211,7 @@ export function rtfToBlocks(rtf) {
         else if (word === "qj") para.align = "justify";
         else if (word === "ql") para.align = "left";
         else if (IGNORE_DEST.has(word.toLowerCase())) c0.ignore = true;
-        else if (RTF_SYM[word] !== undefined) add(RTF_SYM[word]);
+        else if (isSym(word)) add(tableFor(c0.font) ? symLegacyChar(word, mac) : SYM_CHAR[word]);
         else if (word === "u" && num !== "") { add(String.fromCodePoint(parseInt(num, 10) & 0xffff)); }
         i = j;
       } else { i += 2; }

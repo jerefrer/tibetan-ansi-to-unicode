@@ -45,12 +45,14 @@ function convertText(text, table) {
 
 function resolveFont(runXml, rFontsTag, fallbackFont) {
   if (rFontsTag) {
-    return (
-      attr(rFontsTag, "w:cs") ||
-      attr(rFontsTag, "w:ascii") ||
-      attr(rFontsTag, "w:hAnsi") ||
-      fallbackFont
-    );
+    // Legacy ANSI Tibetan text lives in the ASCII range, so Word stores its font
+    // in w:ascii/w:hAnsi while w:cs is often a different default. Prefer whichever
+    // slot is actually a known legacy font (ascii/hAnsi first).
+    const a = attr(rFontsTag, "w:ascii");
+    const h = attr(rFontsTag, "w:hAnsi");
+    const c = attr(rFontsTag, "w:cs");
+    for (const f of [a, h, c]) if (f && getBudaTable(f)) return f;
+    return a || h || c || fallbackFont;
   }
   return fallbackFont;
 }

@@ -5,14 +5,7 @@
 // untouched, and runs in non-legacy fonts are left as-is.
 
 import { getBudaTable, defaultSizeScale } from "../fonts.js";
-
-// Control words that stand for a literal character (Word writes smart quotes /
-// dashes this way). In legacy fonts these code points are Tibetan glyphs, so
-// they must go through conversion, not be passed through as punctuation.
-const RTF_SYM = {
-  ldblquote: "“", rdblquote: "”", lquote: "‘", rquote: "’",
-  emdash: "—", endash: "–", bullet: "•",
-};
+import { isMacRtf, isSym, symLegacyChar } from "../rtf-symbols.js";
 
 const IGNORE_DEST = new Set([
   "colortbl", "stylesheet", "info", "pict", "object", "themedata",
@@ -51,6 +44,7 @@ export function convertRtfDocument(rtf, options = {}) {
   rtf = String(rtf);
   const unicodeFont = options.unicodeFont || "Jomolhari";
   const sizeScale = options.sizeScale ?? defaultSizeScale(unicodeFont);
+  const mac = isMacRtf(rtf);
   const ft = parseFontTableRegion(rtf);
   if (!ft) return rtf; // not an RTF we understand
 
@@ -139,11 +133,11 @@ export function convertRtfDocument(rtf, options = {}) {
           if (curLegacy()) flush();
           cur().size = parseInt(num, 10);
           out.s += tok + trailing;
-        } else if (RTF_SYM[word] !== undefined) {
+        } else if (isSym(word)) {
           if (curLegacy()) {
-            buf += RTF_SYM[word];
+            buf += symLegacyChar(word, mac); // original font byte -> converted
             bufTable = getBudaTable(ft.fonts[cur().font]);
-          } else out.s += tok + trailing;
+          } else out.s += tok + trailing; // keep the punctuation for non-legacy text
         } else if (IGNORE_DEST.has(word.toLowerCase())) {
           cur().ignore = true;
           flush();

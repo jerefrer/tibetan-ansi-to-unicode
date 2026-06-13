@@ -8,6 +8,7 @@
 // who only convert plain text.
 
 import { convertRuns } from "../runs.js";
+import { getBudaTable } from "../fonts.js";
 
 function decodeEntities(s) {
   return s
@@ -37,15 +38,15 @@ export function documentXmlToRuns(xml) {
     let rm;
     while ((rm = runRe.exec(body))) {
       const inner = rm[1];
-      // font: prefer complex-script (cs), then ascii, then hAnsi
+      // font: prefer the slot that is a known legacy font (ascii/hAnsi before cs),
+      // because legacy ANSI Tibetan text lives in the ASCII range.
       let font = "";
       const rf = inner.match(/<w:rFonts\b[^>]*\/?>/);
       if (rf) {
-        font =
-          attr(rf[0], "w:cs") ||
-          attr(rf[0], "w:ascii") ||
-          attr(rf[0], "w:hAnsi") ||
-          "";
+        const a = attr(rf[0], "w:ascii");
+        const h = attr(rf[0], "w:hAnsi");
+        const c = attr(rf[0], "w:cs");
+        font = [a, h, c].find((f) => f && getBudaTable(f)) || a || h || c || "";
       }
       // text + tabs + breaks, in document order
       let text = "";

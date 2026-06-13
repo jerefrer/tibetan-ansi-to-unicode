@@ -6,6 +6,8 @@
 // against the \fonttbl so Sanskrit runs can be converted with the right table.
 
 import { convertRuns } from "../runs.js";
+import { getBudaTable } from "../fonts.js";
+import { isMacRtf, isSym, symLegacyChar, SYM_CHAR } from "../rtf-symbols.js";
 
 // Destinations whose contents are not body text and must be skipped entirely.
 const IGNORE_DEST = new Set([
@@ -13,13 +15,6 @@ const IGNORE_DEST = new Set([
   "themedata", "colorschememapping", "latentstyles", "datastore",
   "generator", "filetbl", "listtable", "listoverridetable", "rsidtbl",
 ]);
-
-// Control words standing for a literal character (smart quotes / dashes); in
-// legacy fonts these code points are Tibetan glyphs, so feed them through.
-const RTF_SYM = {
-  ldblquote: "“", rdblquote: "”", lquote: "‘", rquote: "’",
-  emdash: "—", endash: "–", bullet: "•",
-};
 
 function parseFontTable(rtf) {
   const fonts = {};
@@ -54,6 +49,7 @@ function parseFontTable(rtf) {
 
 export function rtfToRuns(rtf) {
   rtf = String(rtf);
+  const mac = isMacRtf(rtf);
   const fontTable = parseFontTable(rtf);
   const runs = [];
   // Group stack carries the active font id and whether we're inside an
@@ -126,7 +122,10 @@ export function rtfToRuns(rtf) {
         else if (word === "par" || word === "line" || word === "sect") emit("\n");
         else if (word === "tab") emit("\t");
         else if (word === "cell" || word === "row") emit("\t");
-        else if (RTF_SYM[word] !== undefined) emit(RTF_SYM[word]);
+        else if (isSym(word)) {
+          const legacy = !!getBudaTable(fontTable[cur().font]);
+          emit(legacy ? symLegacyChar(word, mac) : SYM_CHAR[word]);
+        }
         else if (IGNORE_DEST.has(word.toLowerCase())) cur().ignore = true;
         // all other control words: ignore
       } else {

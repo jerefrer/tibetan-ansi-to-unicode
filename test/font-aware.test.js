@@ -84,6 +84,16 @@ describe("RTF parsing", () => {
   it("converts via the run's font", () => {
     assert.strictEqual(convertRtf(rtf).trim(), "ཀཁག");
   });
+
+  it("resolves Mac smart-punctuation control words to the right font byte", () => {
+    // \mac doc: \ldblquote is MacRoman byte 0xD2, which in TibetanChogyal is ༄
+    // (the yig-mgo head), NOT the curly quote “ -> ཞྭ.
+    const macRtf =
+      "{\\rtf1\\mac\\ansicpg1252{\\fonttbl{\\f0\\fcharset77 TibetanChogyal;}}" +
+      "\\f0 \\ldblquote\\'c8\\'ca\\par}";
+    assert.strictEqual(convertRtf(macRtf).trim(), "༄༅།");
+    assert.ok(convertRtfDocument(macRtf).includes("\\u3844")); // ༄ in the output
+  });
 });
 
 describe("DOCX parsing", () => {
