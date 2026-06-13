@@ -1,10 +1,29 @@
-var TibetanUnicodeConverter = function (conversion) {
+// Normalize alternate Unicode code points that different extraction tools
+// (e.g. pdfminer vs. clipboard) produce for the SAME font glyph, verified
+// against the TibetanChogyal cmap, so the tables match regardless of how the
+// legacy text was decoded:
+//   U+00B5 (µ micro sign)  -> U+03BC (μ greek mu)  — same glyph (ག)
+//   U+0153 (œ oe ligature) -> "oe"                  — for ཧཱུྃ ("oe×ñ")
+//   U+0081                 -> U+20AB (₫)            — same glyph (སྤྱ)
+//   U+0090                 -> U+20AF (₯)            — same glyph (དྭ)
+var normalizeLegacy = function (text) {
+  return text
+    .replace(/µ/g, "μ")
+    .replace(/œ/g, "oe")
+    .replace(//g, "₫")
+    .replace(//g, "₯");
+};
+
+var TibetanUnicodeConverter = function (conversion, options) {
+  options = options || {};
   return {
     conversion: conversion,
+    charsMap: options.charsMap || charsMap,
+    wordsMap: options.wordsMap || wordsMap,
     line: "",
     convert: function () {
-      var replaced = this.conversion;
-      wordsMap.forEach(function (word) {
+      var replaced = normalizeLegacy(this.conversion);
+      this.wordsMap.forEach(function (word) {
         replaced = replaced.replace(
           new RegExp(word.encoded, "g"),
           word.tibetan
@@ -19,7 +38,8 @@ var TibetanUnicodeConverter = function (conversion) {
     },
     convertChar: function (char) {
       if (char == " ") return char;
-      var match = charsMap.find(function (object) {
+      var self = this;
+      var match = self.charsMap.find(function (object) {
         return object.encoded.includes(char);
       });
       if (match) return match.tibetan;
@@ -27,6 +47,8 @@ var TibetanUnicodeConverter = function (conversion) {
     },
     convertToAnsi: function () {
       var replaced = this.conversion;
+      var charsMap = this.charsMap;
+      var wordsMap = this.wordsMap;
 
       // Build a set of tibetan sequences that have a direct charsMap entry
       var charsMapTibetans = {};
@@ -95,7 +117,7 @@ var charsMap = [
   { tibetan: "ཧྱ", encoded: "ƒ" },
   { tibetan: "རྒ", encoded: "@" },
   { tibetan: "ྭ", encoded: "Ÿ" },
-  // { tibetan: "ཚྭ", encoded: "'" },
+  { tibetan: "ཚྭ", encoded: "’" }, // right single quote glyph (distinct from ' U+0027 = ཇ)
   { tibetan: "ཁྭ", encoded: "‹" },
   { tibetan: "ཤྭ", encoded: "–" },
 
@@ -220,7 +242,7 @@ var charsMap = [
   { tibetan: "སྨ", encoded: "^" },
   { tibetan: "སྩ", encoded: "_" },
   { tibetan: "ཏྭ", encoded: "₮" },
-  { tibetan: "དྭ", encoded: "₯" },
+  { tibetan: "དྭ", encoded: "₯" }, // U+0090 = real font code (₯/U+20AF not in cmap)
   { tibetan: "དྲྭ", encoded: "š" },
   { tibetan: "༼", encoded: "Ð" },
   { tibetan: "༽", encoded: "Ñ" },
@@ -252,4 +274,5 @@ var wordsMap = [
   { tibetan: "མངྒ་ལཾ", encoded: "0]-:î" },
 ];
 
+export { charsMap, wordsMap, normalizeLegacy };
 export default TibetanUnicodeConverter;

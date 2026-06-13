@@ -2,4 +2,21 @@ export { testGroups } from "./src/testGroups.js";
 export {
   default as TibetanUnicodeConverter,
   default,
+  charsMap,
+  wordsMap,
+  normalizeLegacy,
 } from "./src/tibetan-unicode-converter.js";
+
+// Font-aware conversion (use the font of each run to disambiguate glyphs),
+// backed by BUDA's py-tiblegenc tables (194 fonts).
+export { convertRuns, convertRun } from "./src/runs.js";
+export {
+  normalizeFontName,
+  getBudaTable,
+  isKnownFont,
+  supportedFonts,
+} from "./src/fonts.js";
+
+// Document parsers -> font-tagged runs and direct conversion helpers.
+export { rtfToRuns, convertRtf } from "./src/parsers/rtf.js";
+export { docxToRuns, convertDocx, documentXmlToRuns } from "./src/parsers/docx.js";
