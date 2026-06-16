@@ -10,6 +10,7 @@ import TibetanUnicodeConverter, {
   supportedFonts,
   rtfToRuns,
   convertRtf,
+  rtfToBlocks,
   documentXmlToRuns,
   convertDocx,
   convertDocxDocument,
@@ -93,6 +94,34 @@ describe("RTF parsing", () => {
       "\\f0 \\ldblquote\\'c8\\'ca\\par}";
     assert.strictEqual(convertRtf(macRtf).trim(), "༄༅།");
     assert.ok(convertRtfDocument(macRtf).includes("\\u3844")); // ༄ in the output
+  });
+
+  it("skips \\uN fallback chars, never leaking '?' between glyphs", () => {
+    // Cocoa/Word write each Unicode char as \uNNNN followed by \ucN fallback
+    // chars. With \uc1 the single '?' after each escape must be dropped — not
+    // emitted as text, which once produced "༄?༅?།?" in the on-screen preview.
+    const ucRtf =
+      "{\\rtf1\\ansi{\\fonttbl{\\f0 TibetanChogyal;}}" +
+      "\\uc1\\f0\\u3844?\\u3845?\\u3853?\\par}";
+    const out = convertRtf(ucRtf);
+    assert.strictEqual(out.trim(), "༄༅།");
+    assert.ok(!out.includes("?"), "stray '?' fallback char leaked");
+    assert.ok(!out.includes("�"), "U+FFFD replacement char leaked");
+  });
+
+  it("rtfToBlocks (preview) also skips \\uc fallback chars", () => {
+    // The on-screen preview uses rtfToBlocks, a separate parser from convertRtf.
+    // It must skip \ucN fallbacks too, else re-uploading a converted .rtf (or
+    // any Word/Cocoa \uNNNN?-encoded file) shows "༄?༅?།?" on screen — the bug
+    // that reached production.
+    const ucRtf =
+      "{\\rtf1\\ansi{\\fonttbl{\\f0 TibetanChogyal;}}" +
+      "\\uc1\\f0\\u3844?\\u3845?\\u3853?\\par}";
+    const text = rtfToBlocks(ucRtf)
+      .map((b) => b.runs.map((r) => r.text).join(""))
+      .join("");
+    assert.strictEqual(text, "༄༅།");
+    assert.ok(!text.includes("?"), "stray '?' leaked into preview blocks");
   });
 });
 
